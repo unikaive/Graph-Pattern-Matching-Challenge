@@ -11,14 +11,40 @@ using namespace std;
 Backtrack::Backtrack() {}
 Backtrack::~Backtrack() {}
 
+vector<int> matching_order;
+int sum = 0 ;
 
-std::vector<int> matching_order;
+//For query ordering
+bool compare(const pair<int,int>& a, const pair<int,int>& b) {
+	if (a.second == b.second) return a.first < b.first;
+	return a.second < b.second;
+}
+
+vector<Vertex> query_ordering(const Graph &query, const CandidateSet &cs){
+  map<int, int> m;
+  for (int i=0; i < query.GetNumVertices(); i++){
+    m[i]=cs.GetCandidateSize(i);
+  }
+  vector<pair<int,int>> vec( m.begin(), m.end() );
+	sort(vec.begin(), vec.end(), compare);
+
+  vector<int> result;
+  // for (auto num : vec) {
+	// 	cout << "key: "<< num.first << " | value: " << num.second << "\n";
+	// }
+  for (auto num : vec) {
+		result.push_back(num.first);
+	}
+
+  return result;
+}
 
 void search(const Graph &data, const Graph &query, const CandidateSet &cs, size_t now_index, map<int,int> result_map){
   int NumOfQueryVertics = query.GetNumVertices();
 
   if (now_index == NumOfQueryVertics - 1){
     //print all
+    sum+=1;
     std::map<int,int>::iterator it;
     for(it=result_map.begin(); it!=result_map.end(); ++it){
       std::cout<< it->second << " ";
@@ -81,22 +107,26 @@ void search(const Graph &data, const Graph &query, const CandidateSet &cs, size_
 void Backtrack::PrintAllMatches(const Graph &data, const Graph &query,
                                 const CandidateSet &cs) {
 
-  for (int i = 0; i < query.GetNumVertices(); i++)
-  {
-    matching_order.push_back(i);
-  }
+  // for (int i = 0; i < query.GetNumVertices(); i++)
+  // {
+  //   matching_order.push_back(i);
+  // }
+  matching_order = query_ordering(query, cs);
 
   int now_index = 0 ;
 
   //list for printout
   std::map<int, int> result_map;
+  
   for (int count = 0 ; count < cs.GetCandidateSize(now_index); ++count){
     result_map.clear();
     size_t candidate = cs.GetCandidate(now_index,count);
     result_map[now_index]=candidate;
     search(data, query, cs, now_index, result_map);
   }
-   
+  std::cout<< sum << " ";
+
+
   // int NumOfQueryVertics = query.GetNumVertices();
 
   // std::cout << "t " << NumOfQueryVertics << "\n";
