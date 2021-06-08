@@ -50,6 +50,9 @@ void search(const Graph &data, const Graph &query, const CandidateSet &cs, size_
       std::cout<< it->second << " ";
     }
     std::cout<< "\n";
+    if (sum==100000){
+      exit(0);
+    }
   }else{
 
     //select next_query_id
