@@ -13,6 +13,7 @@ Backtrack::~Backtrack() {}
 
 vector<int> matching_order;
 int sum = 0 ;
+int NumOfQueryVertics = 0;
 
 //For query ordering
 bool compare(const pair<int,int>& a, const pair<int,int>& b) {
@@ -22,7 +23,7 @@ bool compare(const pair<int,int>& a, const pair<int,int>& b) {
 
 vector<Vertex> query_ordering(const Graph &query, const CandidateSet &cs){
   map<int, int> m;
-  for (int i=0; i < query.GetNumVertices(); i++){
+  for (int i=0; i < NumOfQueryVertics; i++){
     m[i]=cs.GetCandidateSize(i);
   }
   vector<pair<int,int>> vec( m.begin(), m.end() );
@@ -34,19 +35,18 @@ vector<Vertex> query_ordering(const Graph &query, const CandidateSet &cs){
 	// }
   for (auto num : vec) {
 		result.push_back(num.first);
+    std::cout<<num.first<<' ';
 	}
 
   return result;
 }
 
 void search(const Graph &data, const Graph &query, const CandidateSet &cs, size_t now_index, map<int,int> result_map){
-  int NumOfQueryVertics = query.GetNumVertices();
 
   if (now_index == NumOfQueryVertics - 1){
     //print all
-    sum+=1;
-    std::map<int,int>::iterator it;
-    for(it=result_map.begin(); it!=result_map.end(); ++it){
+    ++sum;
+    for(map<int,int>::iterator it=result_map.begin(); it!=result_map.end(); ++it){
       std::cout<< it->second << " ";
     }
     std::cout<< "\n";
@@ -56,22 +56,22 @@ void search(const Graph &data, const Graph &query, const CandidateSet &cs, size_
     size_t next_query_id = matching_order[now_index+1];
 
     //inspect next candidate
-    for (int count2 = 0 ; count2 < cs.GetCandidateSize(next_query_id); ++count2){
-      size_t candidate = cs.GetCandidate(next_query_id,count2);
-      bool vaild = true ;
+    
 
+    for (int count = 0 ; count < cs.GetCandidateSize(next_query_id); ++count){
+      size_t candidate = cs.GetCandidate(next_query_id,count);
+      bool vaild = true ;
       //check candidate is used.
-      for (auto it = result_map.begin(); it != result_map.end(); ++it)
+      for (map<int,int>::iterator it = result_map.begin(); it != result_map.end(); ++it){
         if (it->second == candidate){
           vaild = false;
           break;
         }else{
           //do nothing
         }
-
+      }
       if (vaild == true){
         //check candidate is connected
-
         //check all neighbor of query_id.
         for (int i = query.GetNeighborStartOffset(next_query_id); i <query.GetNeighborEndOffset(next_query_id) ; i++){
           //check neighbor is in result_map
@@ -106,18 +106,18 @@ void search(const Graph &data, const Graph &query, const CandidateSet &cs, size_
 
 void Backtrack::PrintAllMatches(const Graph &data, const Graph &query,
                                 const CandidateSet &cs) {
+  ios::sync_with_stdio(false);
 
   // for (int i = 0; i < query.GetNumVertices(); i++)
   // {
   //   matching_order.push_back(i);
   // }
+  
+  map<int, int> result_map; //list for printout
+  int now_index = 0 ; //set start
+  NumOfQueryVertics = query.GetNumVertices();
   matching_order = query_ordering(query, cs);
 
-  int now_index = 0 ;
-
-  //list for printout
-  std::map<int, int> result_map;
-  
   for (int count = 0 ; count < cs.GetCandidateSize(now_index); ++count){
     result_map.clear();
     size_t candidate = cs.GetCandidate(now_index,count);
@@ -144,9 +144,9 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query,
   //   {
   //     int temp = cs.GetCandidateSize(count);
   //     std::cout << temp << "\n";
-  //     for (int count2 = 0 ; count2 < temp; ++count2)
+  //     for (int count = 0 ; count < temp; ++count)
   //     {
-  //     int temp2 = cs.GetCandidate(count,count2);
+  //     int temp2 = cs.GetCandidate(count,count);
   //     std::cout << temp2 << " ";
   //     }
   //   }
@@ -256,9 +256,9 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query,
 
 //   }else{
 //   // else put element to result_list, and do recursive.
-//     for (int count2 = 0 ; count2 < cs.GetCandidateSize(now_vertex); ++count2)
+//     for (int count = 0 ; count < cs.GetCandidateSize(now_vertex); ++count)
 //     {
-//     int temp2 = cs.GetCandidate(now_vertex,count2);
+//     int temp2 = cs.GetCandidate(now_vertex,count);
 //     result_list[now_vertex] = temp2;
 //     search(data, query, cs, now_vertex+1, visited, result_list);
 //     }
