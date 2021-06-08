@@ -120,7 +120,4 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query,
     result_map[now_index]=candidate;
     search(data, query, cs, now_index, result_map);
   }
-
-  std::cout<< sum << " ";
-
 }
