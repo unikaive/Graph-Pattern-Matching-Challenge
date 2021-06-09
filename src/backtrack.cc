@@ -114,10 +114,10 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query,
   NumOfQueryVertics = query.GetNumVertices();
   matching_order = MatchingOrder(query, cs);
 
-  for (int count = 0 ; count < cs.GetCandidateSize(now_index); ++count){
+  for (int count = 0 ; count < cs.GetCandidateSize(matching_order[now_index]); ++count){
     result_map.clear();
-    size_t candidate = cs.GetCandidate(now_index,count);
-    result_map[now_index]=candidate;
+    size_t candidate = cs.GetCandidate(matching_order[now_index],count);
+    result_map[matching_order[now_index]]=candidate;
     search(data, query, cs, now_index, result_map);
   }
 }
